@@ -704,7 +704,7 @@
                 <div class="value gold" id="statTaken">—</div>
             </div>
             <div class="stat-card">
-                <div class="label">Exams pending</div>
+                <div class="label">Yet to take</div>
                 <div class="value" id="statPending">—</div>
             </div>
         </div>
@@ -1120,7 +1120,10 @@
                         const dept = s.department || 'Unspecified';
                         if (!studentsByDept[dept]) studentsByDept[dept] = { total: 0, taken: 0 };
                         studentsByDept[dept].total += 1;
-                        if (examStatusById[d.id] === 'taken') studentsByDept[dept].taken += 1;
+                        const status = examStatusById[d.id];
+                        // "Taken" = student has started or finished the exam.
+                        // Only a missing exam doc / 'not_taken' counts as "yet to take".
+                        if (status === 'submitted' || status === 'in_progress') studentsByDept[dept].taken += 1;
                     });
 
                     for (const [dept, counts] of Object.entries(studentsByDept)) {
@@ -1150,14 +1153,14 @@
                     <td>${r.course}</td>
                     <td><span class="dept-tag">${r.dept}</span></td>
                     <td>${r.total}</td>
-                    <td><span class="status-tag">${r.taken} taken</span></td>
-                    <td><span class="status-tag pending">${r.pending} pending</span></td>
+                    <td><span class="status-tag">${r.taken} students taken</span></td>
+                    <td><span class="status-tag pending">${r.pending} students are yet to take the exam.</span></td>
                 </tr>
             `).join('');
 
             breakdownWrap.innerHTML = `
                 <table>
-                    <thead><tr><th>Course</th><th>Department</th><th>Students</th><th>Exams taken</th><th>Pending</th></tr></thead>
+                    <thead><tr><th>Course</th><th>Department</th><th>Students</th><th>Exam status</th><th></th></tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
             `;
