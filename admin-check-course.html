@@ -369,6 +369,11 @@
             color: #8a5a12;
         }
 
+        .status-tag.progress {
+            background: #e9eef7;
+            color: #33528a;
+        }
+
         .empty-state,
         .loading-state {
             padding: 50px 20px;
@@ -684,7 +689,9 @@
                         name: s.name || '',
                         department: s.department || '',
                         level: s.level || '',
-                        status: exam.status === 'taken' ? 'taken' : 'not_taken',
+                        status: exam.status === 'submitted' ? 'submitted'
+                            : exam.status === 'in_progress' ? 'in_progress'
+                                : 'not_taken',
                         score: typeof exam.score === 'number' ? exam.score : null
                     });
                 });
@@ -705,7 +712,7 @@
                 return matchesSearch && matchesDept;
             });
 
-            const taken = filtered.filter(r => r.status === 'taken');
+            const taken = filtered.filter(r => r.status === 'submitted');
             const total = filtered.length;
             const pending = total - taken.length;
             const avg = taken.length ? (taken.reduce((sum, r) => sum + (r.score || 0), 0) / taken.length).toFixed(1) : '—';
@@ -732,7 +739,10 @@
                     <td>${r.name}</td>
                     <td><span class="dept-tag">${r.department}</span></td>
                     <td>${r.level}</td>
-                    <td>${r.status === 'taken' ? '<span class="status-tag">Taken</span>' : '<span class="status-tag pending">Pending</span>'}</td>
+                    <td>${r.status === 'submitted' ? '<span class="status-tag">Exam Taken</span>'
+                    : r.status === 'in_progress' ? '<span class="status-tag progress">In Progress</span>'
+                        : '<span class="status-tag pending">Exam Not Taken</span>'
+                }</td>
                     <td>${r.score === null ? '—' : r.score}</td>
                 </tr>
             `).join('');
